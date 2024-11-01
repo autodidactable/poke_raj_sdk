@@ -1,0 +1,11 @@
+{
+    "base_url": "https://pokeapi.co/api/v2",
+    "pokemon": {
+        "name": "pikachu",
+        "id": 25
+    },
+    "generation": {
+        "id": 1,
+        "name": "generation-i"
+    }
+}
