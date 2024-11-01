@@ -60,8 +60,10 @@ class PokeAPIClient:
             return self.create_pokemon_from_api(data)
         except requests.exceptions.HTTPError as e:
             print(f"Error: Unable to fetch Pokémon - {e}")
+            raise  # Re-raise the HTTPError for testing
         except requests.exceptions.RequestException as e:
             print(f"Error: Network or API issue - {e}")
+            raise  # Re-raise for broader exception testing
 
     def fetch_generation(self):
         if self.generation_id:
@@ -81,8 +83,10 @@ class PokeAPIClient:
             return self.create_generation_from_api(data)
         except requests.exceptions.HTTPError as e:
             print(f"Error: Unable to fetch Generation - {e}")
+            raise  # Re-raise the HTTPError for testing
         except requests.exceptions.RequestException as e:
             print(f"Error: Network or API issue - {e}")
+            raise  # Re-raise for broader exception testing
 
     def create_pokemon_from_api(self, data):
         abilities = [Ability(ability['ability']['name'], ability['is_hidden']) for ability in data['abilities']]

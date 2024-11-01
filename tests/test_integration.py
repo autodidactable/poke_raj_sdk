@@ -10,6 +10,8 @@ class TestPokeAPIClient(unittest.TestCase):
 
     @patch('poke_raj_sdk.client.requests.get')
     def test_fetch_pokemon(self, mock_get):
+        # Set the config to fetch Pokémon ID 1
+        self.client.pokemon_id = 1
         mock_response = {
             'id': 1,
             'name': 'bulbasaur',
@@ -26,12 +28,14 @@ class TestPokeAPIClient(unittest.TestCase):
         mock_get.return_value.json.return_value = mock_response
         mock_get.return_value.status_code = 200
 
-        pokemon = self.client.fetch_pokemon(1)
+        pokemon = self.client.fetch_pokemon()
         self.assertIsInstance(pokemon, Pokemon)
         self.assertEqual(pokemon.id, 1)
 
     @patch('poke_raj_sdk.client.requests.get')
     def test_fetch_generation(self, mock_get):
+        # Set the config to fetch Generation ID 1
+        self.client.generation_id = 1
         mock_response = {
             'id': 1,
             'name': 'generation-i',
@@ -41,27 +45,29 @@ class TestPokeAPIClient(unittest.TestCase):
         mock_get.return_value.json.return_value = mock_response
         mock_get.return_value.status_code = 200
 
-        generation = self.client.fetch_generation(1)
+        generation = self.client.fetch_generation()
         self.assertIsInstance(generation, Generation)
         self.assertEqual(generation.id, 1)
 
     @patch('poke_raj_sdk.client.requests.get')
     def test_fetch_pokemon_not_found(self, mock_get):
-        # Mock a 404 response and raise an HTTPError
-        mock_get.return_value.status_code = 404
+        # Mock the response to raise an HTTPError for not found
         mock_get.return_value.raise_for_status.side_effect = requests.exceptions.HTTPError("404 Client Error: Not Found")
 
+        client = PokeAPIClient()
+
         with self.assertRaises(requests.exceptions.HTTPError):
-            self.client.fetch_pokemon(9999)  # Assuming 9999 is an invalid ID
+            client.fetch_pokemon()
 
     @patch('poke_raj_sdk.client.requests.get')
     def test_fetch_generation_not_found(self, mock_get):
-        # Mock a 404 response and raise an HTTPError
-        mock_get.return_value.status_code = 404
+        # Mock the response to raise an HTTPError for not found
         mock_get.return_value.raise_for_status.side_effect = requests.exceptions.HTTPError("404 Client Error: Not Found")
 
+        client = PokeAPIClient()
+
         with self.assertRaises(requests.exceptions.HTTPError):
-            self.client.fetch_generation(9999)  # Assuming 9999 is an invalid ID
+            client.fetch_generation()
 
 if __name__ == '__main__':
     unittest.main()
