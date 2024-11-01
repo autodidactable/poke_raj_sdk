@@ -36,18 +36,53 @@ class PokeAPIClient:
             self.config = json.load(config_file)
 
         # Set the base URL and other parameters from the config
-        self.BASE_URL = self.config['base_url']
-        self.pokemon_id = self.config['pokemon']['id']
-        self.pokemon_name = self.config['pokemon']['name']
-        self.generation_id = self.config['generation']['id']
-        self.generation_name = self.config['generation'].get('name', None)  # Optional
+        self.BASE_URL = self.config.get("base_url", "https://pokeapi.co/api/v2")
+        self.pokemon_id = self.config.get('pokemon', {}).get('id')
+        self.pokemon_name = self.config.get('pokemon', {}).get('name')
+        self.generation_id = self.config.get('generation', {}).get('id')
+        self.generation_name = self.config.get('generation', {}).get('name')
 
-    def fetch_pokemon(self, pokemon_id):
-        url = f"{self.BASE_URL}/pokemon/{pokemon_id}/"
-        response = requests.get(url)
-        response.raise_for_status()
-        data = response.json()
-        return self.create_pokemon_from_api(data)
+    def fetch_pokemon(self):
+        if self.pokemon_id:
+            url = f"{self.BASE_URL}/pokemon/{self.pokemon_id}/"
+            print(url)
+        elif self.pokemon_name:
+            url = f"{self.BASE_URL}/pokemon/{self.pokemon_name}/"
+            print(url)
+        else:
+            print("Error: Either 'id' or 'name' is required for Pokémon in config.json.")
+            return None
+
+        try:
+            response = requests.get(url)
+            response.raise_for_status()
+            data = response.json()
+            return self.create_pokemon_from_api(data)
+        except requests.exceptions.HTTPError as e:
+            print(f"Error: Unable to fetch Pokémon - {e}")
+        except requests.exceptions.RequestException as e:
+            print(f"Error: Network or API issue - {e}")
+
+    def fetch_generation(self):
+        if self.generation_id:
+            url = f"{self.BASE_URL}/generation/{self.generation_id}/"
+            print(url)
+        elif self.generation_name:
+            url = f"{self.BASE_URL}/generation/{self.generation_name}/"
+            print(url)
+        else:
+            print("Error: Either 'id' or 'name' is required for Generation in config.json.")
+            return None
+
+        try:
+            response = requests.get(url)
+            response.raise_for_status()
+            data = response.json()
+            return self.create_generation_from_api(data)
+        except requests.exceptions.HTTPError as e:
+            print(f"Error: Unable to fetch Generation - {e}")
+        except requests.exceptions.RequestException as e:
+            print(f"Error: Network or API issue - {e}")
 
     def create_pokemon_from_api(self, data):
         abilities = [Ability(ability['ability']['name'], ability['is_hidden']) for ability in data['abilities']]
@@ -68,13 +103,6 @@ class PokeAPIClient:
             location_area_encounters=data['location_area_encounters']
         )
 
-    def fetch_generation(self, generation_id):
-        url = f"{self.BASE_URL}/generation/{generation_id}/"
-        response = requests.get(url)
-        response.raise_for_status()
-        data = response.json()
-        return self.create_generation_from_api(data)
-
     def create_generation_from_api(self, data):
         names = {name['language']['name']: name['name'] for name in data['names']}
         return Generation(
@@ -85,6 +113,8 @@ class PokeAPIClient:
         )
 
 def print_pokemon(pokemon):
+    if not pokemon:
+        return
     print(f"ID: {pokemon.id}")
     print(f"Name: {pokemon.name.capitalize()}")
     print(f"Base Experience: {pokemon.base_experience}")
@@ -93,26 +123,24 @@ def print_pokemon(pokemon):
     print(f"Is Default: {'Yes' if pokemon.is_default else 'No'}")
     print(f"Order: {pokemon.order}")
 
-    # Print abilities
     print("\nAbilities:")
     for ability in pokemon.abilities:
         print(f"- {ability.ability.name.capitalize()} (Hidden: {'Yes' if ability.is_hidden else 'No'})")
 
-    # Print moves
     print("\nMoves:")
     for move in pokemon.moves:
         print(f"- {move.move.name.capitalize()}")
 
-    # Print sprites
     print("\nSprites:")
     print(f"Front Default: {pokemon.sprites.front_default}")
     print(f"Back Default: {pokemon.sprites.back_default}")
 
-    # Print location area encounters
     print("\nLocation Area Encounters:")
     print(pokemon.location_area_encounters)
 
 def print_generation(generation):
+    if not generation:
+        return
     print(f"ID: {generation.id}")
     print(f"Name: {generation.name.capitalize()}")
     print("Names in Different Languages:")
@@ -123,18 +151,18 @@ def print_generation(generation):
 if __name__ == "__main__":
     client = PokeAPIClient()
 
-    # Example: Fetching the Pokémon specified in the config
     try:
-        pokemon = client.fetch_pokemon(client.pokemon_id)
-        print("Pokemon Details:")
-        print_pokemon(pokemon)
+        pokemon = client.fetch_pokemon()
+        if pokemon:
+            print("Pokemon Details:")
+            print_pokemon(pokemon)
     except Exception as e:
         print(f"Error fetching Pokémon data: {e}")
 
-    # Example: Fetching the generation specified in the config
     try:
-        generation = client.fetch_generation(client.generation_id)
-        print("\nGeneration Details:")
-        print_generation(generation)
+        generation = client.fetch_generation()
+        if generation:
+            print("\nGeneration Details:")
+            print_generation(generation)
     except Exception as e:
         print(f"Error fetching Generation data: {e}")
