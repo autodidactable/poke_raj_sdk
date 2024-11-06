@@ -12,7 +12,27 @@ class PokemonMove:
     def __repr__(self):
         return f"PokemonMove(name={self.name}, url={self.url})"
 
-#pokemon model
+class Ability:
+    def __init__(self, name, is_hidden):
+        self.ability = AbilityDetail(name)
+        self.is_hidden = is_hidden
+
+class AbilityDetail:
+    def __init__(self, name):
+        self.name = name
+
+class Move:
+    def __init__(self, name):
+        self.move = MoveDetail(name)
+
+class MoveDetail:
+    def __init__(self, name):
+        self.name = name
+
+class Sprite:
+    def __init__(self, front_default, back_default):
+        self.front_default = front_default
+        self.back_default = back_default
 class Pokemon:
     def __init__(self, id, name, base_experience, height, weight, is_default, order, abilities, moves, sprites, location_area_encounters):
         self.id = id

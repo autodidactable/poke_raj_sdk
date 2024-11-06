@@ -1,29 +1,7 @@
 import os
 import requests
 import json
-from .models import Pokemon, Generation
-
-class Ability:
-    def __init__(self, name, is_hidden):
-        self.ability = AbilityDetail(name)
-        self.is_hidden = is_hidden
-
-class AbilityDetail:
-    def __init__(self, name):
-        self.name = name
-
-class Move:
-    def __init__(self, name):
-        self.move = MoveDetail(name)
-
-class MoveDetail:
-    def __init__(self, name):
-        self.name = name
-
-class Sprite:
-    def __init__(self, front_default, back_default):
-        self.front_default = front_default
-        self.back_default = back_default
+from .models import Pokemon, Generation, Ability, AbilityDetail, Move, MoveDetail, Sprite
 
 class PokeAPIClient:
     def __init__(self):
