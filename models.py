@@ -33,6 +33,7 @@ class Sprite:
     def __init__(self, front_default, back_default):
         self.front_default = front_default
         self.back_default = back_default
+#pokemon model
 class Pokemon:
     def __init__(self, id, name, base_experience, height, weight, is_default, order, abilities, moves, sprites, location_area_encounters):
         self.id = id
