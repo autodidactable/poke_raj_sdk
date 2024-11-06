@@ -57,7 +57,8 @@ The SDK uses a `config.json` file to provide values for `id` and `name` for each
         "id": 25
     },
     "generation": {
-        "id": 1
+        "id": 1,
+        "name": "generation-i"
     }
 }
 ```
